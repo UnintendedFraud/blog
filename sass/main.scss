@@ -1,0 +1,11 @@
+.header {
+  a {
+    text-decoration: none;
+    color: #000;
+    padding-bottom: 4px;
+
+    &:hover {
+      border-bottom: 1.5px solid #000;
+    }
+  }
+}
