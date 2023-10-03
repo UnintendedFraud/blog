@@ -1,6 +1,10 @@
 +++
 title = "About - Unintended Fraud"
-template = "about/about.html"
+template = "about.html"
+date = "2010-01-01"
+
+[taxonomies]
+type = ["page"]
 +++
 
 # About
