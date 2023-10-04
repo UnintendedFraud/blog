@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section>
+<section class="entry">
   <div class="column-left">
     <p>{{ page.date }}</p>
+
+  {% if page.taxonomies.tags %}
+  {% for t in page.taxonomies.tags %}
+  <a class="tag-link" href="/tags/{{ t }}">
+    #{{ t }}
+  </a>
+  <br>
+  {% endfor %}
+  {% endif %}
   </div>
 
   <div class="column-right">

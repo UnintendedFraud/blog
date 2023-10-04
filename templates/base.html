@@ -1,31 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link
-      rel="stylesheet"
-      href="{{ get_url(path='main.css',
-    trailing_slash=false) | safe }}"
-    />
-    <title>Unintended Fraud</title>
-  </head>
 
-  <body>
-    <section class="header">
-      <div class="column-left"></div>
-      <div class="column-right">
-        <a href="/">home</a>
-        <a href="/blog">blog</a>
-        <a href="/about">about</a>
-      </div>
-    </section>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="{{ get_url(path='main.css',
+    trailing_slash=false) | safe }}" />
+  <title>Unintended Fraud</title>
+</head>
 
-    <section class="logo">
-      <div class="column-left">
-        <a class="logo" href="/">unintended fraud</a>
-      </div>
-    </section>
+<body>
+  <section class="header">
+    <a href="/">home</a>
+    <a href="/about">about</a>
+  </section>
 
-    <div class="content">{% block content %} {% endblock %}</div>
-  </body>
+  <section class="logo">
+    <a class="logo" href="/">unintended fraud</a>
+  </section>
+
+  <section class="content">{% block content %} {% endblock %}</section>
+</body>
+
 </html>

@@ -4,10 +4,11 @@ $gap: 30px;
 
 $dark: #0b0b0b;
 $grey: #a1a1a1;
+$logoBg: rgb(124, 192, 176);
 
 body {
   margin: 0;
-  padding: 0;
+  padding: 12px 12px 12px 0;
   background-color: #f2f2f2;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -20,73 +21,72 @@ body {
     margin: 0;
   }
 
-  section {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
+  a {
+    text-decoration: none;
 
-    .column-left {
-      width: $columnleft;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .header {
+    margin-left: $columnleft + $gap;
+    margin-bottom: 24px;
+
+    a {
       color: $grey;
-      font-size: 13px;
-      text-align: right;
-      margin-right: $gap;
+      margin-right: 16px;
+    }
+  }
 
-      a {
+  .logo {
+    width: $columnleft;
+    background-color: $logoBg;
+    padding: 5px;
+    box-sizing: border-box;
+    text-align: right;
+    color: #fff;
+    font-weight: 600;
+
+    a:hover {
+      text-decoration: none;
+    }
+  }
+
+  .content {
+    margin-top: 24px;
+    max-width: 1200px;
+
+    .entry {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      margin-bottom: 36px;
+
+      .column-left {
         color: $grey;
-        text-decoration: none;
+        margin-top: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        min-width: $columnleft;
+        margin-right: $gap;
 
-        &:hover {
-          text-decoration: underline;
+        a {
+          color: $grey;
+          margin-top: 4px;
         }
       }
-    }
 
-    .column-right {
-      max-width: $columnright;
-      font-size: 14px;
-    }
+      .column-right {
+        h1 {
+          margin-bottom: 6px;
 
-    &.header {
-      margin-top: 12px;
-
-      a {
-        text-decoration: none;
-        color: $grey;
-
-        &:hover {
-          text-decoration: underline;
+          a {
+            font-size: 1.5em;
+            color: $dark;
+          }
         }
-      }
-    }
-
-    &.logo {
-      a {
-        text-transform: uppercase;
-        opacity: 1;
-        margin-left: 0;
-        width: 100%;
-        display: inline-block;
-        text-align: right;
-        background-color: rgb(124, 192, 176);
-        color: #fff;
-        padding: 4px 8px;
-        text-decoration: none;
-        font-weight: 600;
-        box-sizing: border-box;
-      }
-    }
-
-    &.entry {
-      margin-top: 20px;
-      align-items: center;
-    }
-
-    h1 {
-      > a {
-        text-decoration: none;
-        color: $dark;
       }
     }
   }
