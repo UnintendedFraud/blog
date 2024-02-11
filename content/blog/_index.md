@@ -1,7 +1,7 @@
 +++
 title = "List of blog posts"
 sort_by = "date"
-template = "index.html"
+template = "blog.html"
 page_template = "blog_page.html"
 transparent = true
 +++

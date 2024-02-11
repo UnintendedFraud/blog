@@ -4,21 +4,115 @@ $gap: 30px;
 
 $dark: #0b0b0b;
 $grey: #a1a1a1;
-$logoBg: rgb(124, 192, 176);
+// $logoBg: rgb(124, 192, 176);
+$logoBg: #E86D5C;
+
+// ---- palette ----
+
+$orange: #F39F5A;
+$pink: #AE445A;
+$bordeaux: #662549;
+$purple: #451952;
+
+$mainBg: #232323;
+$defaultColor: #c9c9c9;
 
 body {
   margin: 0;
   padding: 12px 12px 12px 0;
-  background-color: #f2f2f2;
+  background-color: $mainBg;
   min-height: 100vh;
   box-sizing: border-box;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: $defaultColor;
+  padding-bottom: 100px;
+
+  .main {
+      max-width: 1000px;
+      margin: 50px auto 0 auto;
+      padding-left: 12px;
+
+      h1.name {
+          font-size: 4em;
+          margin-bottom: 8px;
+          text-align: center;
+
+          .firstname {
+              color: $orange;
+          }
+
+          .lastname {
+              color: $pink;
+          }
+      }
+
+      h2 {
+          color: $defaultColor;
+          text-align: center;
+          margin-bottom: 8px;
+      }
+
+      .skills {
+          color: $defaultColor;
+          text-align: center;
+      }
+      
+      h3 {
+          color: rgba($defaultColor, 0.6);
+          margin-bottom: 12px;
+          margin-top: 70px;
+          font-weight: 600;
+      }
+
+      a.external {
+          color: $orange;
+          margin-bottom: 6px;
+          display: inline-block;
+      }
+
+      .movie {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          margin-top: 36px;
+
+          img {
+              margin-right: 12px;
+          }
+
+          a {
+              color: $orange;
+              font-size: 0.9em;
+              opacity: 0.5;
+          }
+
+          h4 {
+              margin-right: 12px;
+          }
+
+          .movie-title {
+              margin-bottom: 6px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              h4 {
+                  font-size: 1.2em;
+                  font-weight: 600;
+              }
+          }
+
+      }
+
+  }
 
   a,
   p,
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
     padding: 0;
     margin: 0;
   }
@@ -52,7 +146,7 @@ body {
     padding: 5px;
     box-sizing: border-box;
     text-align: right;
-    color: #fff;
+    color: #000;
     font-weight: 600;
 
     a:hover {

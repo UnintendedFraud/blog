@@ -1,34 +1,129 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<!-- If you are using pagination, section.pages will be empty. You need to use the paginator object -->  
-{% for page in section.pages %}
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="{{ get_url(path='main.css',
+    trailing_slash=false) | safe }}" />
+  <title>Brice Bernard - Software Engineer</title>
+</head>
 
-{% if page.taxonomies.type %}
-  {% set pageType = page.taxonomies.type | first %}
-  {% if pageType == "page" %}
-  {% continue %}
-  {% endif %}
-{% endif %}
+<body>
+    <div class="main">
+        <h1 class="name">
+            <span class="firstname">Brice</span>
+            <span class="lastname">Bernard</span>
+        </h1>
+        <h2>Software Engineer</h2>
+        <p class="skills">Go - Typescript - React - Svelte - Postgres - and more...</p>
 
-<section class="entry">
-<div class="column-left">
-  <p>{{ page.date }}</p>
+        <h3>#about</h3>
+        <p>blabla</p>
 
-  {% if page.taxonomies.tags %}
-  {% for t in page.taxonomies.tags %}
-  <a class="tag-link" href="/tags/{{ t }}">
-    #{{ t }}
-  </a>
-  <br>
-  {% endfor %}
-  {% endif %}
+        <h3>#external links</h3>
+        <a class="external" title="github mimuuu" target="_blank" rel="noreferrer" href="https://github.com/mimuuu">gihub.com/mimuuu</a>
+        <br>
+        <a class="external" title="github unintendedfraud" target="_blank" rel="noreferrer" href="https://github.com/unintendedfraud">gihub.com/unintendedfraud</a>
+        <br>
+        <a class="external" title="linkedin" target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/brice-bernard-05130518/">LinkedIn</a>
+        <br>
 
-</div>
-<div class="column-right">
-  <h1><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
-  <p>{{ page.summary | safe }}</p>
-</section>
+        <h3>#what you should watch</h3>
+        <p>This won't be technical stuff nor the best movies I've seen ever, just a few that I've seen recently that I have enjoyed recently.</p>
 
-{% endfor %}
-{% endblock content %}
+        <div class="movie">
+             {% set image = resize_image(path="/static/movies/movie4.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="station eleven" />
+             <div>
+                <div class="movie-title">
+                    <h4>Station Eleven</h4>
+                    <a href="https://letterboxd.com/film/station-eleven/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <p><i>"A post apocalyptic saga spanning multiple timelines telling the stories of survivors of a devastating flu 
+                    as they attempt to rebuild and reimagine the world anew while holding on to the best of what’s been lost."</i>
+                <br>
+                Despite what it sounds like, it has nothing to do with covid, it's from a book by Emily St. John Mandel - which I have
+                not read -. The serie is very poetic, there are so many beautiful and emotionnal moments I cannot count them, it is 
+                one of the best show I've seen in recent times. At the end I only wish I could erase my memory and watch it again.
+                </p>
+             </div>
+        </div>
+
+        <div class="movie">
+             {% set image = resize_image(path="/static/movies/movie1.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="la passion de dodin bouffant" />
+             <div>
+                <div class="movie-title">
+                    <h4>La Passion de Dodin Bouffant (The Taste of Things)</h4>
+                    <a href="https://letterboxd.com/film/the-taste-of-things/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <p>As a french and a food lover, I had to love this movie. Classy food porn is the best description one can make.</p>
+             </div>
+        </div>
+
+        <div class="movie">
+             {% set image = resize_image(path="/static/movies/movie2.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="miss sloane" />
+             <div>
+                <div class="movie-title">
+                    <h4>Miss Sloane</h4>
+                    <a href="https://letterboxd.com/film/miss-sloane/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <p>A battle between a genius lobbyist fighting for the people vs. the powerful gun lobby. A classic setup and overall
+                a classic sequence of events. However the movie is extremely well made and well acted which makes it a must-see if you enjoy the
+                genre. The ending is one of the most satisfying thing I've seen in a while even though you expect it to happen (which
+                speak even more to the quality of the film I think).</p>
+             </div>
+        </div>
+
+        <div class="movie">
+             {% set image = resize_image(path="/static/movies/movie3.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="maestro" />
+             <div>
+                <div class="movie-title">
+                    <h4>Maestro</h4>
+                    <a href="https://letterboxd.com/film/maestro-2023/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <p>I watched Maestro during a sneak preview session (one of the best thing ever created). A movie clearly made for the oscars (long, black
+                and white, main theme around what it takes to create amazing art, etc), it stays intense the entire time, both Bradley Cooper and
+                Carey Mulligan are amazing. You'll be moved or you may be a robot.</p>
+             </div>
+        </div>
+
+        <div class="movie">
+             {% set image = resize_image(path="/static/movies/movie5.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="columbus" />
+             <div>
+                <div class="movie-title">
+                    <h4>Columbus</h4>
+                    <a href="https://letterboxd.com/film/columbus-2017/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <p>This is just the last quality movie of a genre I really loved for some reason, aka well directed, beautiful cinematography and 
+                a very slow movie where not much happens. Just regular people living and talking. I don't know why but every time those movies
+                make me feel so good and relaxed. If you're the same or if you're curious, Columbus is a sure bet.</p>
+             </div>
+        </div>
+
+        <h3>#what you should read</h3>
+        <p>Same as above with books although this is probably more what I last read as I read (way) less than I watch movies. (._.)</p>
+
+        <div class="movie">
+             {% set image = resize_image(path="/static/books/3body.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="three body problem" />
+             <div>
+                <div class="movie-title">
+                    <h4>The Three-Body Problem Series (Liu Cixin)</h4>
+                </div>
+                <p>I saw this book recommended many times until I finally tried it. It took me a while to really get into it but
+                after the mid-way mark of book one I was completely hooked. I couldn't stop reading. The book touches so many 
+                different science-fiction concepts, theories, spanning across millions if not billions of years, it's like a guided
+                meditation in your intellect. So many times the book ask a seemingly impossible question and explore how to solve it,
+                it truly is fascinating. Plus the author managed to write the story in a way that makes you feel the full size and weight
+                of the entire universe. Masterpiece.</p>
+             </div>
+        </div>
+    </div>
+</body>
+
+</html>
+

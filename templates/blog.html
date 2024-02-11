@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- If you are using pagination, section.pages will be empty. You need to use the paginator object -->  
+{% for page in section.pages %}
+
+{% if page.taxonomies.type %}
+  {% set pageType = page.taxonomies.type | first %}
+  {% if pageType == "page" %}
+  {% continue %}
+  {% endif %}
+{% endif %}
+
+<section class="entry">
+<div class="column-left">
+  <p>{{ page.date }}</p>
+
+  {% if page.taxonomies.tags %}
+  {% for t in page.taxonomies.tags %}
+  <a class="tag-link" href="/tags/{{ t }}">
+    #{{ t }}
+  </a>
+  <br>
+  {% endfor %}
+  {% endif %}
+
+</div>
+<div class="column-right">
+  <h1><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
+  <p>{{ page.summary | safe }}</p>
+</section>
+
+{% endfor %}
+{% endblock content %}
