@@ -1,13 +1,9 @@
-$columnleft: 180px;
+$columnleft: 190px;
 $columnright: 800px;
 $gap: 30px;
 
 $dark: #0b0b0b;
 $grey: #a1a1a1;
-// $logoBg: rgb(124, 192, 176);
-$logoBg: #E86D5C;
-
-// ---- palette ----
 
 $orange: #F39F5A;
 $pink: #AE445A;
@@ -26,6 +22,23 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: $defaultColor;
   padding-bottom: 100px;
+
+  a,
+  p,
+  h1,
+  h2,
+  h3,
+  h4 {
+    padding: 0;
+    margin: 0;
+  }
+
+  a,
+  p {
+      line-height: 1.3em;
+  }
+
+  // --- Main page ---
 
   .main {
       max-width: 1000px;
@@ -115,23 +128,9 @@ body {
           }
 
       }
-
   }
 
-  a,
-  p,
-  h1,
-  h2,
-  h3,
-  h4 {
-    padding: 0;
-    margin: 0;
-  }
-
-  a,
-  p {
-      line-height: 1.3em;
-  }
+  // --- Blog ---
 
   pre {
     padding: 12px;
@@ -151,26 +150,37 @@ body {
     margin-bottom: 24px;
 
     a {
-      color: $grey;
-      margin-right: 16px;
+      color: $orange;
+      margin-right: 32px;
     }
   }
 
   .logo {
+    display: block;
     width: $columnleft;
-    background-color: $logoBg;
     padding: 5px;
     box-sizing: border-box;
     text-align: right;
-    color: #000;
+    color: $orange;
     font-weight: 600;
+    font-size: 20px;
 
-    a:hover {
-      text-decoration: none;
+    a {
+        .firstname {
+            color: $orange;
+        }
+
+        .lastname {
+            color: $pink;
+        }
+        
+        &:hover {
+          text-decoration: none;
+      }
     }
   }
 
-  .content {
+  .blog {
     margin-top: 24px;
     max-width: 1200px;
 
@@ -190,7 +200,7 @@ body {
         margin-right: $gap;
 
         a {
-          color: $grey;
+          color: rgba($orange, 0.6);
           margin-top: 4px;
         }
       }
@@ -201,8 +211,11 @@ body {
 
           a {
             font-size: 1.5em;
-            color: $dark;
+            color: $defaultColor;
           }
+        }
+        p {
+            margin: 24px 0;
         }
       }
     }

@@ -18,14 +18,20 @@
 <body>
   <section class="header">
     <a href="/">home</a>
+    <a href="/blog">blog</a>
     <a href="/about">about</a>
   </section>
 
   <section class="logo">
-    <a class="logo" href="/">unintended fraud</a>
+    <!-- <a class="logo" href="/blog">unintended fraud</a> -->
+    <a title="blog" href="/blog">
+      <span class="firstname">unintended</span>
+      <span class="lastname">fraud</span>
+    </a>
   </section>
 
-  <section class="content">{% block content %} {% endblock %}</section>
+
+  <section class="blog">{% block content %} {% endblock %}</section>
 </body>
 
 </html>
