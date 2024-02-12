@@ -1,10 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8" />
-  <link rel="shortcut icon" type="image/jpg" href="{{ get_url(path='/favicon.png', trailing_slash=false) | safe }}"/>
+  <link rel="shortcut icon" type="image/png" href="{{ get_url(path='/favicon.png', trailing_slash=false) | safe }}"/>
   <link rel="stylesheet" href="{{ get_url(path='main.css',
     trailing_slash=false) | safe }}" />
-  <title>Brice Bernard - Software Engineer</title>
+  <title>{{ section.title }}</title>
 </head>
 
 <body>
@@ -15,8 +17,6 @@
                 <span class="lastname">Bernard</span>
             </h1>
             <h2>Software Engineer</h2>
-            <!-- <p class="skills">Go - Javascript / Typescript - React - Svelte - Postgres - and more...</p> -->
-            <!-- <br> -->
             <a href="/blog" title="unintended fraud blog">blog</a>
         </div>
 

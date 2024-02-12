@@ -3,9 +3,16 @@
 
 <head>
   <meta charset="utf-8" />
+  <link rel="shortcut icon" type="image/png" href="{{ get_url(path='/favicon.png', trailing_slash=false) | safe }}"/>
   <link rel="stylesheet" href="{{ get_url(path='main.css',
     trailing_slash=false) | safe }}" />
-  <title>Unintended Fraud</title>
+  {% if section.title %}
+  <title>{{ section.title }}</title>
+  {% elif page.title %}
+  <title>{{ page.title }}</title>
+  {% else %}
+  <title>Unintended Fraud - Blog</title>
+  {% endif %}
 </head>
 
 <body>
