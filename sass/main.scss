@@ -38,6 +38,25 @@ body {
       line-height: 1.3em;
   }
 
+  a {
+      color: $orange;
+  }
+
+  ul {
+      margin: 12px 0;
+
+      li {
+          margin: 6px 0;
+      }
+  }
+
+    .contact {
+      color: $pink;
+  }
+  .contact-middle {
+      color: $bordeaux;
+  }
+
   // --- Main page ---
 
   .main {
@@ -71,12 +90,6 @@ body {
           }
       }
 
-      .contact {
-          color: $pink;
-      }
-      .contact-middle {
-          color: $bordeaux;
-      }
       
       h3 {
           color: rgba($defaultColor, 0.6);
@@ -150,7 +163,6 @@ body {
     margin-bottom: 24px;
 
     a {
-      color: $orange;
       margin-right: 32px;
     }
   }
