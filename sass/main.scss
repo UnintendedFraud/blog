@@ -32,29 +32,37 @@ body {
       margin: 50px auto 0 auto;
       padding-left: 12px;
 
-      h1.name {
-          font-size: 4em;
-          margin-bottom: 8px;
+      .top {
           text-align: center;
 
-          .firstname {
-              color: $orange;
+          h1.name {
+              font-size: 4em;
+              margin-bottom: 8px;
+
+              .firstname {
+                  color: $orange;
+              }
+
+              .lastname {
+                  color: $pink;
+              }
           }
 
-          .lastname {
-              color: $pink;
+          h2 {
+              color: $defaultColor;
+              margin-bottom: 8px;
+          }
+
+          .skills {
+              color: $defaultColor;
           }
       }
 
-      h2 {
-          color: $defaultColor;
-          text-align: center;
-          margin-bottom: 8px;
+      .contact {
+          color: $pink;
       }
-
-      .skills {
-          color: $defaultColor;
-          text-align: center;
+      .contact-middle {
+          color: $bordeaux;
       }
       
       h3 {
@@ -64,10 +72,13 @@ body {
           font-weight: 600;
       }
 
-      a.external {
+      a {
           color: $orange;
-          margin-bottom: 6px;
           display: inline-block;
+
+          &.external {
+              margin-bottom: 8px;
+          }
       }
 
       .movie {
@@ -115,6 +126,11 @@ body {
   h4 {
     padding: 0;
     margin: 0;
+  }
+
+  a,
+  p {
+      line-height: 1.2em;
   }
 
   pre {

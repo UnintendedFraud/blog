@@ -10,15 +10,31 @@
 
 <body>
     <div class="main">
-        <h1 class="name">
-            <span class="firstname">Brice</span>
-            <span class="lastname">Bernard</span>
-        </h1>
-        <h2>Software Engineer</h2>
-        <p class="skills">Go - Typescript - React - Svelte - Postgres - and more...</p>
+        <div class="top">
+            <h1 class="name">
+                <span class="firstname">Brice</span>
+                <span class="lastname">Bernard</span>
+            </h1>
+            <h2>Software Engineer</h2>
+            <p class="skills">Go - Javascript / Typescript - React - Svelte - Postgres - and more...</p>
+            <br>
+            <a href="/blog" title="unintended fraud blog">blog</a>
+        </div>
 
         <h3>#about</h3>
-        <p>blabla</p>
+        <p>
+        Currently a full-stack software engineer using mostly Go and Typescript.<br> 
+        Trying to go deeper 
+        </p>
+        <br>
+        <p>
+        Below are a few things I like, in a throwback of what old-school blog were before.
+        Hopefully you'll find something you didn't know you would like!
+        </p>
+        <br>
+        <p>
+        You can contact me at: <span class="contact">bricecontact</span><span class="contact-middle">[at]</span><span class="contact">fastmail.com</span>
+        </p>
 
         <h3>#external links</h3>
         <a class="external" title="github mimuuu" target="_blank" rel="noreferrer" href="https://github.com/mimuuu">gihub.com/mimuuu</a>
@@ -29,7 +45,7 @@
         <br>
 
         <h3>#what you should watch</h3>
-        <p>This won't be technical stuff nor the best movies I've seen ever, just a few that I've seen recently that I have enjoyed recently.</p>
+        <p>Not the best movies I've seen ever, just a few that I've enjoyed recently.</p>
 
         <div class="movie">
              {% set image = resize_image(path="/static/movies/movie4.jpg", width=80, op="fit_width") %}
