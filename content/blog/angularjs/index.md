@@ -6,16 +6,18 @@ date = 2015-03-12
 tags = ["angularjs", "javascript", "sneaky"]
 +++
 
-**Note from 2024**  
-I copying over this post from ages ago because I'm actually quite proud of it even though it was probably a terrible practice if it would have
+**Note from 2024**: I copying over this post from ages ago because I'm actually quite proud of it even though it was probably a terrible practice if it would have
 been used. This was my first "wow" moment. Probably the first time I fixed a real problem I thought was too big or complicated for me, and it
 worked so well I thought I broke the entire thing. Changing a list so slow it's literally stuttering to a list so fluid you would think
-it's just text without interaction felt so good.
+it's just text without interaction felt really good.
+
+<!-- more -->
+--
 
 AngularJS is great, easy to use, somewhat easy to learn if you don't believe everything you read online and think a little bit, and most importantly allow you to do some bindings in a very simple way. Everything is updating in real time, you don't have to do anything, it's perfect.
 
 However it doesn't come without drawbacks, the biggest one being **performance**.
-With Angular 1.3 came the "bind once" syntax using the `::`syntax. This is great but sometimes you want to keep all of your bindings set because the values might change, and that can become an issue in long lists (for example an infinite scrolling `ng-repeat`).
+With Angular 1.3 came the "bind once" syntax using the `::` syntax. This is great but sometimes you want to keep all of your bindings set because the values might change, and that can become an issue in long lists (for example an infinite scrolling `ng-repeat`).
 
 ## How to remove / re-add watchers
 
@@ -26,7 +28,7 @@ The first idea I had was to actually remove the elements outside the viewport, a
 So I decided to **use the debug info** created by default by Angular. It provides a shit load of stuff, including arrays of watchers associated with every elements. The idea was to store the arrays of watchers locally, empty the ones attached to the element, and fill them back when needed. 
 
 It's actually very easy.  
-An element has 2 kind of watchers associated to it, the ones from its `scope`and the ones from its `isolateScope`, so we need to store both of them.
+An element has 2 kind of watchers associated to it, the ones from its `scope` and the ones from its `isolateScope`, so we need to store both of them.
 
 * We need an array to store the watchers, we'll call it **wArray**.  
 * The first element would be another array of 2 elements, the watchers from the the `scope`, the watchers from the `isolateScope`

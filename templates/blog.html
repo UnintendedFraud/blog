@@ -17,9 +17,9 @@
 
   {% if page.taxonomies.tags %}
   {% for t in page.taxonomies.tags %}
-  <a class="tag-link" href="/tags/{{ t }}">
+  <p class="tag-link">
     #{{ t }}
-  </a>
+  </p>
   <br>
   {% endfor %}
   {% endif %}
