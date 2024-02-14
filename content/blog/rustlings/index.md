@@ -56,6 +56,23 @@ Below are my solutions, maybe it'll help someone, possibly future me who knows.
 [structs2.rs](#structs-structs2-rs)  
 [structs3.rs](#structs-structs3-rs)  
 
+[enums1.rs](#enums-enums1-rs)  
+[enums2.rs](#enums-enums2-rs)  
+[enums3.rs](#enums-enums3-rs)  
+
+[strings1.rs](#strings-strings1-rs)  
+[strings2.rs](#strings-strings2-rs)  
+[strings3.rs](#strings-strings3-rs)  
+[strings4.rs](#strings-strings4-rs)  
+
+[modules1.rs](#modules-modules1-rs)  
+[modules2.rs](#modules-modules2-rs)  
+[modules3.rs](#modules-modules3-rs)  
+
+[hashmaps1.rs](#hashmaps-hashmaps1-rs)  
+[hashmaps2.rs](#hashmaps-hashmaps2-rs)  
+[hashmaps3.rs](#hashmaps-hashmaps3-rs)  
+
 TBC.
 
 ### intro2.rs
@@ -729,5 +746,393 @@ impl Package {
     fn get_fees(&self, cents_per_gram: u32) -> u32 {
         return self.weight_in_grams * cents_per_gram;
     }
+}
+```
+
+### enums/enums1.rs
+```rs
+#[derive(Debug)]
+enum Message {
+    Quit,
+    Echo,
+    Move,
+    ChangeColor,
+}
+
+fn main() {
+    println!("{:?}", Message::Quit);
+    println!("{:?}", Message::Echo);
+    println!("{:?}", Message::Move);
+    println!("{:?}", Message::ChangeColor);
+}
+```
+
+### enums/enums2.rs
+```rs
+#[derive(Debug)]
+enum Message {
+    // TODO: define the different variants used below
+    Move { x: i32, y: i32 },
+    Echo(String),
+    ChangeColor(i32, i32, i32),
+    Quit,
+}
+
+impl Message {
+    fn call(&self) { println!("{:?}", self);
+    }
+}
+
+fn main() {
+    let messages = [
+        Message::Move { x: 10, y: 30 },
+        Message::Echo(String::from("hello world")),
+        Message::ChangeColor(200, 255, 255),
+        Message::Quit,
+    ];
+
+    for message in &messages {
+        message.call();
+    }
+}
+```
+
+### enums/enums3.rs
+Here we need to make sure to use `u8` when defining the `ChangeColor` enum, as in the state implementation that's how
+color is defined.
+
+```rs
+enum Message {
+    // TODO
+    Echo(String),
+    ChangeColor(u8, u8, u8),
+    Move(Point),
+    Quit,
+}
+
+struct Point {
+    x: u8,
+    y: u8,
+}
+
+struct State {
+    color: (u8, u8, u8),
+    position: Point,
+    quit: bool,
+    message: String,
+}
+
+impl State {
+    fn change_color(&mut self, color: (u8, u8, u8)) {
+        self.color = color;
+    }
+
+    fn quit(&mut self) {
+        self.quit = true;
+    }
+
+    fn echo(&mut self, s: String) {
+        self.message = s
+    }
+
+    fn move_position(&mut self, p: Point) {
+        self.position = p;
+    }
+
+    fn process(&mut self, message: Message) {
+        // TODO: create a match expression to process the different message
+        // variants
+        // Remember: When passing a tuple as a function argument, you'll need
+        // extra parentheses: fn function((t, u, p, l, e))
+
+        match message {
+            Message::Quit => self.quit = true,
+            Message::ChangeColor(r, g, b) => self.change_color((r, g, b)),
+            Message::Echo(str) => self.echo(str),
+            Message::Move(p) => self.move_position(p),
+        }
+    }
+}
+```
+
+### strings/strings1.rs
+```rs
+// Make me compile without changing the function signature!
+//
+
+fn main() {
+    let answer = current_favorite_color();
+    println!("My current favorite color is {}", answer);
+}
+
+fn current_favorite_color() -> String {
+    return String::from("blue");
+}
+```
+
+### strings/strings2.rs
+```rs
+// Make me compile without changing the function signature!
+//
+fn main() {
+    let word = String::from("green"); // Try not changing this line :)
+    if is_a_color_word(word.as_str()) {
+        println!("That is a color word I know!");
+    } else {
+        println!("That is not a color word I know.");
+    }
+}
+
+fn is_a_color_word(attempt: &str) -> bool {
+    attempt == "green" || attempt == "blue" || attempt == "red"
+}
+```
+
+### strings/strings3.rs
+```rs
+fn trim_me(input: &str) -> String {
+    // TODO: Remove whitespace from both ends of a string!
+    return input.trim().to_string();
+}
+
+fn compose_me(input: &str) -> String {
+    // TODO: Add " world!" to the string! There's multiple ways to do this!
+    return input.to_owned() + " world!";
+    // return format!("{} world!", input);
+}
+
+fn replace_me(input: &str) -> String {
+    // TODO: Replace "cars" in the string with "balloons"!
+    return input.replace("cars", "balloons");
+}
+```
+
+### strings/strings4.rs
+```rs
+// Ok, here are a bunch of values-- some are `String`s, some are `&str`s. Your
+// task is to call one of these two functions on each value depending on what
+// you think each value is. That is, add either `string_slice` or `string`
+// before the parentheses on each line. If you're right, it will compile!
+//
+fn string_slice(arg: &str) {
+    println!("{}", arg);
+}
+fn string(arg: String) {
+    println!("{}", arg);
+}
+
+fn main() {
+    string_slice("blue");
+    string("red".to_string());
+    string(String::from("hi"));
+    string("rust is fun!".to_owned());
+    string_slice("nice weather".into());
+    string(format!("Interpolation {}", "Station"));
+    string_slice(&String::from("abc")[0..1]);
+    string_slice("  hello there ".trim());
+    string("Happy Monday!".to_string().replace("Mon", "Tues"));
+    string("mY sHiFt KeY iS sTiCkY".to_lowercase());
+}
+```
+
+### modules/modules1.rs
+Functions in a module are private by default, so here we just need to make `make_sausage` public to be used in the 
+`main` function.
+```rs
+mod sausage_factory {
+    // Don't let anybody outside of this module see this!
+    fn get_secret_recipe() -> String {
+        String::from("Ginger")
+    }
+
+    pub fn make_sausage() {
+        get_secret_recipe();
+        println!("sausage!");
+    }
+}
+
+fn main() {
+    sausage_factory::make_sausage();
+}
+```
+
+### modules/modules2.rs
+We need to two changes here, replace both `???` with the name used in the `main` function (`fruit` and `veggie`). We
+also need to make those public in order to be able to use it outside of the module.
+```rs
+// You can bring module paths into scopes and provide new names for them with
+// the 'use' and 'as' keywords. Fix these 'use' statements to make the code
+// compile.
+mod delicious_snacks {
+    // TODO: Fix these use statements
+    pub use self::fruits::PEAR as fruit;
+    pub use self::veggies::CUCUMBER as veggie;
+
+    mod fruits {
+        pub const PEAR: &'static str = "Pear";
+        pub const APPLE: &'static str = "Apple";
+    }
+
+    mod veggies {
+        pub const CUCUMBER: &'static str = "Cucumber";
+        pub const CARROT: &'static str = "Carrot";
+    }
+}
+
+fn main() {
+    println!(
+        "favorite snacks: {} and {}",
+        delicious_snacks::fruit,
+        delicious_snacks::veggie
+    );
+}
+```
+
+### modules/modules3.rs
+```rs
+// You can use the 'use' keyword to bring module paths from modules from
+// anywhere and especially from the Rust standard library into your scope. Bring
+// SystemTime and UNIX_EPOCH from the std::time module. Bonus style points if
+// you can do it with one line!
+//
+// TODO: Complete this use statement
+use std::time::{SystemTime, UNIX_EPOCH};
+
+fn main() {
+    match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(n) => println!("1970-01-01 00:00:00 UTC was {} seconds ago!", n.as_secs()),
+        Err(_) => panic!("SystemTime before UNIX EPOCH!"),
+    }
+}
+```
+
+### hashmaps/hashmaps1.rs
+```rs
+// A basket of fruits in the form of a hash map needs to be defined. The key
+// represents the name of the fruit and the value represents how many of that
+// particular fruit is in the basket. You have to put at least three different
+// types of fruits (e.g apple, banana, mango) in the basket and the total count
+// of all the fruits should be at least five.
+//
+use std::collections::HashMap;
+
+fn fruit_basket() -> HashMap<String, u32> {
+    let mut basket = HashMap::new();
+
+    // Two bananas are already given for you :)
+    basket.insert(String::from("banana"), 2);
+
+    // TODO: Put more fruits in your basket here.
+    basket.insert(String::from("mango"), 6);
+    basket.insert(String::from("apple"), 9);
+
+    basket
+}
+```
+
+### hashmaps/hashmaps2.rs
+Adding `4` of each type of fruit is arbitraty, could be anything, could be randomize, as long as it's more than 11 total 
+as per the requirement.
+```rs
+// We're collecting different fruits to bake a delicious fruit cake. For this,
+// we have a basket, which we'll represent in the form of a hash map. The key
+// represents the name of each fruit we collect and the value represents how
+// many of that particular fruit we have collected. Three types of fruits -
+// Apple (4), Mango (2) and Lychee (5) are already in the basket hash map. You
+// must add fruit to the basket so that there is at least one of each kind and
+// more than 11 in total - we have a lot of mouths to feed. You are not allowed
+// to insert any more of these fruits!
+//
+use std::collections::HashMap;
+
+#[derive(Hash, PartialEq, Eq)]
+enum Fruit {
+    Apple,
+    Banana,
+    Mango,
+    Lychee,
+    Pineapple,
+}
+
+fn fruit_basket(basket: &mut HashMap<Fruit, u32>) {
+    let fruit_kinds = vec![
+        Fruit::Apple,
+        Fruit::Banana,
+        Fruit::Mango,
+        Fruit::Lychee,
+        Fruit::Pineapple,
+    ];
+
+    for fruit in fruit_kinds {
+        // basket. Note that you are not allowed to put any type of fruit that's
+        // already present!
+        if !basket.contains_key(&fruit) {
+            basket.insert(fruit, 4);
+        }
+    }
+}
+```
+
+### hashmaps/hashmaps3.rs
+I extracted the logic of updating the score of a team in a separate function, but you could have duplicated it for 
+`team_1` and `team_2` in the `build_scores_table` function directly.
+```rs
+// A list of scores (one per line) of a soccer match is given. Each line is of
+// the form : "<team_1_name>,<team_2_name>,<team_1_goals>,<team_2_goals>"
+// Example: England,France,4,2 (England scored 4 goals, France 2).
+//
+// You have to build a scores table containing the name of the team, goals the
+// team scored, and goals the team conceded. One approach to build the scores
+// table is to use a Hashmap. The solution is partially written to use a
+// Hashmap, complete it to pass the test.
+
+use std::collections::HashMap;
+
+// A structure to store the goal details of a team.
+struct Team {
+    goals_scored: u8,
+    goals_conceded: u8,
+}
+
+fn build_scores_table(results: String) -> HashMap<String, Team> {
+    // The name of the team is the key and its associated struct is the value.
+    let mut scores: HashMap<String, Team> = HashMap::new();
+
+    for r in results.lines() {
+        let v: Vec<&str> = r.split(',').collect();
+        let team_1_name = v[0].to_string();
+        let team_1_score: u8 = v[2].parse().unwrap();
+        let team_2_name = v[1].to_string();
+        let team_2_score: u8 = v[3].parse().unwrap();
+        // TODO: Populate the scores table with details extracted from the
+        // current line. Keep in mind that goals scored by team_1
+        // will be the number of goals conceded from team_2, and similarly
+        // goals scored by team_2 will be the number of goals conceded by
+        // team_1.
+
+        add_team_scores(
+            &mut scores,
+            team_1_name.to_string(),
+            team_1_score,
+            team_2_score,
+        );
+        add_team_scores(
+            &mut scores,
+            team_2_name.to_string(),
+            team_2_score,
+            team_1_score,
+        );
+    }
+    scores
+}
+
+fn add_team_scores(scores: &mut HashMap<String, Team>, name: String, scored: u8, conceded: u8) {
+    let team = scores.entry(name).or_insert(Team {
+        goals_scored: 0,
+        goals_conceded: 0,
+    });
+
+    team.goals_conceded += conceded;
+    team.goals_scored += scored;
 }
 ```
