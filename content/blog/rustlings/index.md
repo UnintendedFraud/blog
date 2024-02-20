@@ -1,6 +1,6 @@
 +++
 title = "Rustlings - Solutions"
-date = 2023-10-05
+date = 2024-02-10
 
 [taxonomies]
 tags = ["rust", "learning"]

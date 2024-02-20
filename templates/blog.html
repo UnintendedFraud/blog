@@ -27,6 +27,21 @@
 </div>
 <div class="column-right">
   <h1><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
+
+  <div class="mobile">
+      <p>{{ page.date }}</p>
+      <div class="tags">
+          {% if page.taxonomies.tags %}
+          {% for t in page.taxonomies.tags %}
+          <p class="tag-link">
+            #{{ t }}
+          </p>
+          <br>
+          {% endfor %}
+          {% endif %}
+      </div>
+  </div>
+
   <p>{{ page.summary | safe }}</p>
 </section>
 

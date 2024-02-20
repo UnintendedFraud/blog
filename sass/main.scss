@@ -68,7 +68,7 @@ body {
           text-align: center;
 
           h1.name {
-              font-size: 4em;
+              font-size: 72px;
               margin-bottom: 8px;
 
               .firstname {
@@ -116,6 +116,10 @@ body {
 
           img {
               margin-right: 12px;
+
+              &.mobile {
+                  display: none;
+              }
           }
 
           a {
@@ -143,11 +147,36 @@ body {
       }
   }
 
+  @media (max-width: 600px) {
+      .main {
+          .top h1.name {
+              font-size: 3em;
+          }
+
+          .movie {
+              img {
+                  display: none;
+
+                  &.mobile {
+                      display: block;
+                      margin: 0 auto 12px auto;
+                  }
+              }
+
+              .movie-title {
+                  flex-direction: column;
+                  // align-items: flex-start;
+              }
+          }
+      }
+  }
+
   // --- Blog ---
 
   pre {
     padding: 12px;
     border-radius: 4px;
+    overflow: scroll;
 
     code {
         padding: 0;
@@ -208,6 +237,11 @@ body {
     margin-top: 24px;
     max-width: 1000px;
 
+    p.tag-link {
+      color: rgba($orange, 0.6);
+      margin-top: 4px;
+    }
+
     .entry {
       display: flex;
       flex-direction: row;
@@ -223,14 +257,13 @@ body {
         min-width: $columnleft;
         margin-right: $gap;
         line-height: 0;
-
-        p.tag-link {
-          color: rgba($orange, 0.6);
-          margin-top: 4px;
-        }
       }
 
       .column-right {
+          .mobile {
+              display: none;
+          }
+
         h1 {
             font-size: 1.5em;
           margin-bottom: 6px;
@@ -258,5 +291,45 @@ body {
         }
       }
     }
+  }
+
+  @media (max-width: 600px) {
+    padding-left: 12px;
+
+      .header {
+          margin-left: 0;
+      }
+
+      .logo {
+          text-align: left;
+          width: auto;
+          padding: 0;
+      }
+
+      .blog {
+          .entry {
+              display: block;
+
+              .column-left {
+                  display: none;
+              }
+
+              .column-right {
+                  .mobile {
+                      display: block;
+
+                      .tags {
+                          display: flex;
+                          flex-direction: row;
+                          margin-bottom: 12px;
+
+                          > p {
+                              margin-right: 12px;
+                          }
+                      }
+                  }
+              }
+          }
+      }
   }
 }
