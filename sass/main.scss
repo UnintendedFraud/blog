@@ -147,28 +147,7 @@ body {
       }
   }
 
-  @media (max-width: 600px) {
-      .main {
-          .top h1.name {
-              font-size: 3em;
-          }
-
-          .movie {
-              img {
-                  display: none;
-
-                  &.mobile {
-                      display: block;
-                      margin: 0 auto 12px auto;
-                  }
-              }
-
-              .movie-title {
-                  flex-direction: column;
-                  // align-items: flex-start;
-              }
-          }
-      }
+  @media (max-width: 800px) {
   }
 
   // --- Blog ---
@@ -292,9 +271,34 @@ body {
       }
     }
   }
+}
 
-  @media (max-width: 600px) {
-    padding-left: 12px;
+@media (max-width: 800px) {
+    // main page
+      .main {
+          .top h1.name {
+              font-size: 3em;
+          }
+
+          .movie {
+              img {
+                  display: none;
+
+                  &.mobile {
+                      display: block;
+                      margin: 0 auto 12px auto;
+                  }
+              }
+
+              .movie-title {
+                  flex-direction: column;
+              }
+          }
+      }
+
+      // blog 
+    body {
+        padding-left: 12px;
 
       .header {
           margin-left: 0;
