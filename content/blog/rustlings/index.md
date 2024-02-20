@@ -73,6 +73,22 @@ Below are my solutions, maybe it'll help someone, possibly future me who knows.
 [hashmaps2.rs](#hashmaps-hashmaps2-rs)  
 [hashmaps3.rs](#hashmaps-hashmaps3-rs)  
 
+[quiz2.rs](#quiz2-rs)  
+
+[options1.rs](#options-options1-rs)  
+[options2.rs](#options-options2-rs)  
+[options3.rs](#options-options3-rs)  
+
+[errors1.rs](#error-handling-errors1-rs)  
+[errors2.rs](#error-handling-errors2-rs)  
+[errors3.rs](#error-handling-errors3-rs)  
+[errors4.rs](#error-handling-errors4-rs)  
+[errors5.rs](#error-handling-errors5-rs)  
+[errors6.rs](#error-handling-errors6-rs)  
+
+[generics1](#generics-generics1-rs)  
+[generics2](#generics-generics2-rs)  
+
 TBC.
 
 ### intro2.rs
@@ -1134,5 +1150,396 @@ fn add_team_scores(scores: &mut HashMap<String, Team>, name: String, scored: u8,
 
     team.goals_conceded += conceded;
     team.goals_scored += scored;
+}
+```
+
+### quiz2.rs
+```rs
+// This is a quiz for the following sections:
+// - Strings
+// - Vecs
+// - Move semantics
+// - Modules
+// - Enums
+//
+// Let's build a little machine in the form of a function. As input, we're going
+// to give a list of strings and commands. These commands determine what action
+// is going to be applied to the string. It can either be:
+// - Uppercase the string
+// - Trim the string
+// - Append "bar" to the string a specified amount of times
+// The exact form of this will be:
+// - The input is going to be a Vector of a 2-length tuple,
+//   the first element is the string, the second one is the command.
+// - The output element is going to be a Vector of strings.
+
+pub enum Command {
+    Uppercase,
+    Trim,
+    Append(usize),
+}
+
+mod my_module {
+    use super::Command;
+
+    // TODO: Complete the function signature!
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
+        // TODO: Complete the output declaration!
+        let mut output: Vec<String> = vec![];
+        for (string, command) in input.iter() {
+            // TODO: Complete the function body. You can do it!
+            match command {
+                Command::Uppercase => {
+                    output.push(string.to_uppercase());
+                }
+                Command::Trim => {
+                    output.push(string.trim().to_string());
+                }
+                Command::Append(n) => {
+                    let bars = "bar".repeat(*n);
+                    output.push(format!("{}{}", string, bars));
+                }
+            }
+        }
+        output
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // TODO: What do we need to import to have `transformer` in scope?
+    use super::Command;
+    use crate::my_module::transformer;
+
+    [...]
+}
+```
+
+### options/options1.rs
+In the test, I am not sure if they expected `Some` or something else tbh.
+```rs
+// This function returns how much icecream there is left in the fridge.
+// If it's before 10PM, there's 5 pieces left. At 10PM, someone eats them
+// all, so there'll be no more left :(
+fn maybe_icecream(time_of_day: u16) -> Option<u16> {
+    // We use the 24-hour system here, so 10PM is a value of 22 and 12AM is a
+    // value of 0 The Option output should gracefully handle cases where
+    // time_of_day > 23.
+    // TODO: Complete the function body - remember to return an Option!
+    if time_of_day > 23 {
+        return None;
+    }
+    if time_of_day < 22 {
+        return Some(5);
+    }
+    return Some(0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_icecream() {
+        assert_eq!(maybe_icecream(9), Some(5));
+        assert_eq!(maybe_icecream(10), Some(5));
+        assert_eq!(maybe_icecream(23), Some(0));
+        assert_eq!(maybe_icecream(22), Some(0));
+        assert_eq!(maybe_icecream(25), None);
+    }
+
+    #[test]
+    fn raw_value() {
+        // TODO: Fix this test. How do you get at the value contained in the
+        // Option?
+        let icecreams = maybe_icecream(12);
+        assert_eq!(icecreams, Some(5));
+    }
+}
+```
+
+### options/options2.rs
+```rs
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn simple_option() {
+        let target = "rustlings";
+        let optional_target = Some(target);
+
+        // TODO: Make this an if let statement whose value is "Some" type
+        if let Some(word) = optional_target {
+            assert_eq!(word, target);
+        }
+    }
+
+    #[test]
+    fn layered_option() {
+        let range = 10;
+        let mut optional_integers: Vec<Option<i8>> = vec![None];
+
+        for i in 1..(range + 1) {
+            optional_integers.push(Some(i));
+        }
+
+        let mut cursor = range;
+
+        // TODO: make this a while let statement - remember that vector.pop also
+        // adds another layer of Option<T>. You can stack `Option<T>`s into
+        // while let and if let.
+        while let Some(Some(integer)) = optional_integers.pop() {
+            assert_eq!(integer, cursor);
+            cursor -= 1;
+        }
+
+        assert_eq!(cursor, 0);
+    }
+}
+```
+
+### options/options3.rs
+```rs
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn main() {
+    let y: Option<Point> = Some(Point { x: 100, y: 200 });
+
+    match y {
+        Some(ref p) => println!("Co-ordinates are {},{} ", p.x, p.y),
+        _ => panic!("no match!"),
+    }
+    y; // Fix without deleting this line.
+}
+```
+
+### error_handling/errors1.rs
+```rs
+// This function refuses to generate text to be printed on a nametag if you pass
+// it an empty string. It'd be nicer if it explained what the problem was,
+// instead of just sometimes returning `None`. Thankfully, Rust has a similar
+// construct to `Option` that can be used to express error conditions. Let's use
+// it!
+//
+pub fn generate_nametag_text(name: String) -> Result<String, String> {
+    if name.is_empty() {
+        // Empty names aren't allowed.
+        return Err(String::from("`name` was empty; it must be nonempty."));
+    } else {
+        return Ok(format!("Hi! My name is {}", name));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generates_nametag_text_for_a_nonempty_name() {
+        assert_eq!(
+            generate_nametag_text("Beyoncé".into()),
+            Ok("Hi! My name is Beyoncé".into())
+        );
+    }
+
+    #[test]
+    fn explains_why_generating_nametag_text_fails() {
+        assert_eq!(
+            generate_nametag_text("".into()),
+            // Don't change this line
+            Err("`name` was empty; it must be nonempty.".into())
+        );
+    }
+}
+```
+
+### error_handling/errors2.rs
+I put both solutions in. The `?` feels good though.
+```rs
+// Say we're writing a game where you can buy items with tokens. All items cost
+// 5 tokens, and whenever you purchase items there is a processing fee of 1
+// token. A player of the game will type in how many items they want to buy, and
+// the `total_cost` function will calculate the total cost of the tokens. Since
+// the player typed in the quantity, though, we get it as a string-- and they
+// might have typed anything, not just numbers!
+//
+// Right now, this function isn't handling the error case at all (and isn't
+// handling the success case properly either). What we want to do is: if we call
+// the `total_cost` function on a string that is not a number, that function
+// will return a `ParseIntError`, and in that case, we want to immediately
+// return that error from our function and not try to multiply and add.
+//
+use std::num::ParseIntError;
+
+pub fn total_cost(item_quantity: &str) -> Result<i32, ParseIntError> {
+    let processing_fee = 1;
+    let cost_per_item = 5;
+
+    let qty = item_quantity.parse::<i32>()?;
+    Ok(qty * cost_per_item + processing_fee)
+
+    // We could do this instead of the ?
+    // let qty = item_quantity.parse::<i32>();
+    // match qty {
+    //     Ok(q) => {
+    //         return Ok(q * cost_per_item + processing_fee);
+    //     }
+    //     Err(err) => {
+    //         return Err(err);
+    //     }
+    // }
+}
+```
+
+### error_handling/errors3.rs
+```rs
+// This is a program that is trying to use a completed version of the
+// `total_cost` function from the previous exercise. It's not working though!
+// Why not? What should we do to fix it?
+//
+use std::num::ParseIntError;
+
+fn main() -> Result<(), ParseIntError> {
+    let mut tokens = 100;
+    let pretend_user_input = "8";
+
+    let cost = total_cost(pretend_user_input)?;
+
+    if cost > tokens {
+        println!("You can't afford that many!");
+    } else {
+        tokens -= cost;
+        println!("You now have {} tokens.", tokens);
+    }
+
+    return Ok(());
+}
+```
+
+### error_handling/errors4.rs
+```rs
+#[derive(PartialEq, Debug)]
+struct PositiveNonzeroInteger(u64);
+
+#[derive(PartialEq, Debug)]
+enum CreationError {
+    Negative,
+    Zero,
+}
+
+impl PositiveNonzeroInteger {
+    fn new(value: i64) -> Result<PositiveNonzeroInteger, CreationError> {
+        // Hmm... Why is this always returning an Ok value?
+        if value < 0 {
+            return Err(CreationError::Negative);
+        }
+        if value == 0 {
+            return Err(CreationError::Zero);
+        }
+
+        return Ok(PositiveNonzeroInteger(value as u64));
+    }
+}
+```
+
+### error_handling/errors5.rs
+```rs
+// This exercise uses some concepts that we won't get to until later in the
+// course, like `Box` and the `From` trait. It's not important to understand
+// them in detail right now, but you can read ahead if you like. For now, think
+// of the `Box<dyn ???>` type as an "I want anything that does ???" type, which,
+// given Rust's usual standards for runtime safety, should strike you as
+// somewhat lenient!
+//
+// In short, this particular use case for boxes is for when you want to own a
+// value and you care only that it is a type which implements a particular
+// trait. To do so, The Box is declared as of type Box<dyn Trait> where Trait is
+// the trait the compiler looks for on any value used in that context. For this
+// exercise, that context is the potential errors which can be returned in a
+// Result.
+//
+// What can we use to describe both errors? In other words, is there a trait
+// which both errors implement?
+//
+use std::error;
+use std::fmt;
+use std::num::ParseIntError;
+
+// TODO: update the return type of `main()` to make this compile.
+fn main() -> Result<(), Box<dyn error::Error>> {
+    let pretend_user_input = "42";
+    let x: i64 = pretend_user_input.parse()?;
+    println!("output={:?}", PositiveNonzeroInteger::new(x)?);
+    Ok(())
+}
+```
+
+### error_handling/errors6.rs
+```rs 
+// Using catch-all error types like `Box<dyn error::Error>` isn't recommended
+// for library code, where callers might want to make decisions based on the
+// error content, instead of printing it out or propagating it further. Here, we
+// define a custom error type to make it possible for callers to decide what to
+// do next when our function returns an error.
+//
+use std::num::ParseIntError;
+
+// This is a custom error type that we will be using in `parse_pos_nonzero()`.
+#[derive(PartialEq, Debug)]
+enum ParsePosNonzeroError {
+    Creation(CreationError),
+    ParseInt(ParseIntError),
+}
+
+impl ParsePosNonzeroError {
+    fn from_creation(err: CreationError) -> ParsePosNonzeroError {
+        return ParsePosNonzeroError::Creation(err);
+    }
+    // TODO: add another error conversion function here.
+    fn from_parseint(err: ParseIntError) -> ParsePosNonzeroError {
+        return ParsePosNonzeroError::ParseInt(err);
+    }
+}
+
+fn parse_pos_nonzero(s: &str) -> Result<PositiveNonzeroInteger, ParsePosNonzeroError> {
+    // TODO: change this to return an appropriate error instead of panicking
+    // when `parse()` returns an error.
+    match s.parse() {
+        Err(e) => {
+            return Err(ParsePosNonzeroError::from_parseint(e));
+        }
+        Ok(x) => {
+            return PositiveNonzeroInteger::new(x).map_err(ParsePosNonzeroError::from_creation);
+        }
+    }
+}
+```
+
+### generics/generics1.rs
+```rs
+// This shopping list program isn't compiling! Use your knowledge of generics to
+// fix it.
+//
+fn main() {
+    let mut shopping_list: Vec<&str> = Vec::new();
+    shopping_list.push("milk");
+}
+```
+
+### generics/generics2.rs
+```rs
+// This powerful wrapper provides the ability to store a positive integer value.
+// Rewrite it using generics so that it supports wrapping ANY type.
+//
+struct Wrapper<T> {
+    value: T,
+}
+
+impl<T> Wrapper<T> {
+    pub fn new(value: T) -> Self {
+        Wrapper { value }
+    }
 }
 ```
