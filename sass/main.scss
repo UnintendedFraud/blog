@@ -38,6 +38,10 @@ body {
       line-height: 1.3em;
   }
 
+  p {
+      margin: 24px 0;
+  }
+
   a {
       color: $orange;
   }
@@ -113,6 +117,10 @@ body {
           align-items: center;
           justify-content: flex-start;
           margin-top: 36px;
+
+          p {
+              margin: 0;
+          }
 
           img {
               margin-right: 12px;
@@ -257,6 +265,10 @@ body {
         min-width: $columnleft;
         margin-right: $gap;
         line-height: 0;
+
+        p {
+            margin: 0 0 6px 0;
+        }
       }
 
       .column-right {
@@ -284,10 +296,6 @@ body {
             h3 {
                 margin-top: 48px;
             }
-
-            p {
-                margin: 24px 0;
-            }
         }
       }
     }
@@ -295,6 +303,10 @@ body {
 
   @media (max-width: 600px) {
     padding-left: 12px;
+    
+        p {
+            margin: 12px 0;
+        }
 
       .header {
           margin-left: 0;
@@ -324,7 +336,7 @@ body {
                           margin-bottom: 12px;
 
                           > p {
-                              margin-right: 12px;
+                              margin: 0 12px 0 0;
                           }
                       }
                   }

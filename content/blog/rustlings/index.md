@@ -7,7 +7,7 @@ tags = ["rust", "learning"]
 +++
 
 [Rustlings](https://github.com/rust-lang/rustlings/tree/main) is a nice project presenting you with a serie of small
-exercises to learn most of the concept of the languages. From declaring variables to more advances concepts. You are
+exercises to learn most of the concept of the languages. From declaring variables to more advances concepts. We are
 presented with a failing program and should fix it in order to compile.
 
 <!-- more -->
