@@ -1,58 +1,51 @@
 +++
-title = "Go context"
-date = 2024-03-10
+title = "Understanding Go context"
+date = 2024-03-11
 
 [taxonomies]
-tags = ["go", "learning", "context"]
+tags = ["go", "learning", "context", "channels"]
 +++
 
-Go context are one of those things you can use without understanding them. All you have to do is pass 
-`context.Background()` to satisfy some external libraries requirements, maybe add some context with self explanatory 
-timeout if you feeling fancy, or simply pass through the request's context. Let's try to understand a bit more 
-about how they're used and their possibilities.
+Go contexts are a good candidate for something you can use without understanding it. When you see that a context is expected 
+in a function's definition, you can pass the request's context, or `context.Background()` and call it a day. If you're feeling 
+a little crazy you pass a context with a timeout, and it magically work as expected. Here we will try to see the main usages 
+of context (timeout and passing values), but also try to implement a function using a context and see how the implementation 
+look like.
 
 <!-- more -->
 
-From the official documentatation ([https://pkg.go.dev/context](https://pkg.go.dev/context)), we can highlight:
+From the official documentation ([https://pkg.go.dev/context](https://pkg.go.dev/context)), we can highlight:
 
-"Incoming requests to a server should create a Context, and outgoing calls to servers should accept a Context. 
+*"Incoming requests to a server should create a Context, and outgoing calls to servers should accept a Context. 
 The chain of function calls between them must propagate the Context, optionally replacing it with a derived 
-Context [...] When a Context is canceled, all Contexts derived from it are also canceled."
+Context [...] When a Context is canceled, all Contexts derived from it are also canceled."*
 
 From this we already understand multiple things:
-- it is requests related
+- requests usually make heavy use of context, probably where they will be encountered the most
 - a context can have children 
 - if a parent is cancelled, the children are too
 
-If you want to have more details and visualise it, I would recommend this talk (I don't know this person but he 
-breaks it down very nicely): [The context package internals - Damiano Petrungaro](https://www.youtube.com/watch?v=mfgBhGu5pco)
+If you want to have more details and visualise it, I would recommend this talk: 
+[The context package internals - Damiano Petrungaro](https://www.youtube.com/watch?v=mfgBhGu5pco).
 
 Let's see in our own examples how to use context, for timeouts and adding data to a request.
 
-1. [Overview of our simple server](#overview-of-our-simple-server)
+1. [Overview of our simple server](#1-overview-of-our-simple-server)
+2. [Use context to pass request-related data to the endpoint](#2-use-context-to-pass-request-related-data-to-the-endpoint)
+3. [Use context for timeout](#3-use-context-for-timeout)
+4. [Some tweaked examples](#4-some-tweaked-examples)
 
-### Overview of our simple server
+## 1. Overview of our simple server
 
-Context being requests related, we need a server. Go has a very useful `http` package to do that, I created a custom 
-struct to handle middlewares easier along with timeout. I think it'll make the examples better.
-
+Our examples will be requests related so we need a server. Go has a very useful `http` package to do that, I took the liberty 
+to create a wrapper around it to handle middlewares easier.
 ```go
 type ServerHandler func(http.Handler) http.Handler
 
-type Server struct {
-	timeout time.Duration
-}
-
-func NewServer(timeout time.Duration) *Server {
-	return &Server{
-		timeout,
-	}
-}
+type Server struct {}
 
 func (s *Server) Handle(addr string, handlers ...ServerHandler) {
-	middlewares := append(handlers...)
-
-	http.Handle(addr, handleMiddlewares(middlewares))
+	http.Handle(addr, handleMiddlewares(handlers))
 }
 
 func (s *Server) Listen(port int) error {
@@ -73,37 +66,27 @@ func handleMiddlewares(handlers []ServerHandler) http.Handler {
 	return handler
 }
 ```
+This allows us to add middlewares in a more readable way than the default.  
+`http.Handle(path, middleware1, middleware2, handler)` instead of the default 
+`http.Handle(path, middleware1(middleware2(handler)))`.
 
-This is a simple wrapper around the `http` package, only two things are added to make things easier:
-- Allowing to write middleware like this: `http.Handle(path, middleware1, middleware2, endpoint)` instead of the, in 
-my opinion, terrible `http.Handle(path, endpoint(middleware2(middleware1)))`
-- Add the timeout to the `Server` struct to play with it easier
-
-In the example above, `timeout` is not used, but it will later in the example below, by adding an arbitrary middleware.
-
-### Use context to pass request-related data to the endpoint
+## 2. Use context to pass request-related data to the endpoint
 
 It is important to note that the doc specify:  
-"Use context Values only for request-scoped data that transits processes and APIs, not for passing optional 
-parameters to functions."
+*"Use context Values only for request-scoped data that transits processes and APIs, not for passing optional 
+parameters to functions."*
 
-My example will not do that as I want to show how to add values to a context, and read it down the line. In real life, 
-I've used it to add user-related data to the request, or a third-party API client already authenticated ready to use 
-in your endpoint code. I'm sure there are other ways to take advantage of it.
-
-Let's look at our dumb example:
+My example will technically not do that, but it should highlight the principle. In real life, 
+I've used it to add user-related data to the request, a third-party API client ready to go, things like that. 
+I'm sure there are other ways to take advantage of it.
 
 ```go
 const PORT = 8080
 
 func main() {
-	server := NewServer(0) // the 0 is the timeout, ignore for now
+	server := &Server{}
 
-	server.Handle(
-		"/get-value",
-		addValueToContext,
-		handleGetValue,
-	)
+	server.Handle("/get-value", addValueToContext, handleGetValue)
 
 	if err := server.Listen(PORT); err != nil {
 		panic(err)
@@ -112,8 +95,8 @@ func main() {
 }
 ```
 
-Here we create our server, have a route `/get-value`, a middleware that will create a value, and the 
-router handler that will read from the context and return that value.
+Here we create our server, have a route `/get-value`, a middleware that will add values to the request's context, and the 
+route handler that will read from the context and return the values.
 
 Let's look at the middleware first:  
 
@@ -136,7 +119,7 @@ func addValueToContext(next http.Handler) http.Handler {
 				"Goku",
 				"Gohan",
 				"Vegeta",
-				"You get the idea zz",
+				"You get the idea",
 			},
 		}
 
@@ -149,15 +132,13 @@ func addValueToContext(next http.Handler) http.Handler {
 
 
 
-Here we store 3 values in the context. I tried a number, a string and a custom struct to show that we can store anything 
+Here we store 3 values in the context. I added a number, a string and a custom struct to show that we can store anything 
 we need.
 
-If you look closely, you'll notice that we create a new context every time, this is basically how creating new context 
-work (outside of the default `context.TODO()` or `context.Background()`, which are empty and parent for all of the other 
-contexts).  
+If you look closely, you'll notice that we create a new context every time. Context can only contain one value, and all 
+of their constructor methods expect a context and return a child from that context.  
 
-Every new context is created from the previous one, and is therefore a child. Here `ctx3` is the "youngest" child, which 
-we pass to our route handler defined below:  
+Here `ctx3` is the "youngest" child, which we pass onto the next step. Below is our route handler: 
 
 ```go 
 func handleGetValue(next http.Handler) http.Handler {
@@ -168,226 +149,212 @@ func handleGetValue(next http.Handler) http.Handler {
 		undefined := r.Context().Value("value does not exist")
 
 		w.Write([]byte(fmt.Sprintf("\n number: [%d]", n)))
-		w.Write([]byte(fmt.Sprintf("\n Message: [%s]", str)))
-		w.Write([]byte(fmt.Sprintf("\n Complex struct: [%+v]", complex)))
-		w.Write([]byte(fmt.Sprintf("\n Undefined value: [%+v] \n", undefined)))
+		w.Write([]byte(fmt.Sprintf("\n message: [%s]", str)))
+		w.Write([]byte(fmt.Sprintf("\n complex struct: [%+v]", complex)))
+		w.Write([]byte(fmt.Sprintf("\n undefined value: [%+v] \n", undefined)))
 	})
 }
 ```
 
-Here we only retrieve the values and display them on the client.  
+We retrieve the values and write them to the client.  
 For good measures I added a value that does not exist to see what happens (spoiler: it's `nil`).  
 
-The result when calling our endpoint is:
+For simplicity, I will just curl our endpoint from the terminal:
 ```
 curl localhost:8080/get-value
 
 number: [420]
-Message: [RIP Toriyama :(]
-Complex struct: [{question:What is your favourite Dragon Ball character? possibleAnswers:[Goku Gohan Vegeta You get the idea zz]}]
-Undefined value: [<nil>]
+message: [RIP Toriyama :(]
+complex struct: [{question:What is your favourite Dragon Ball character? possibleAnswers:[Goku Gohan Vegeta You get the idea]}]
+undefined value: [<nil>]
 ```
 
 We get all of our values as expected.  
 
-You may wonder how does it work since we passed the youngest context `ctx3` that only contained the value with the complex 
-struct. This is because the way it works is, Go will move up the contextes (is that a word?). For example, when looking 
-up `number`, it will do this (I will use the context names from `addValueToContext` for clarity, it's basically going all 
-the way up each parent in order until it finds the value or hit the end of the line):
-- search `number` in `ctx3`, it's not there
-- search `number` in `ctx2`, it's not there
-- search `number` in `ctx1`, found
+You may wonder how did we retrieve all of the values, when we passed the youngest context `ctx3` that only contains the 
+complex struct. This is because instead of seeing contexts as individual object, we should see them as one branch of a tree,
+starting at the original one (usually `context.Background()`), all the way down to the context we are interacting with 
+in our code. Here our full context is really:
+```
+context.Background() -> r.Context() -> ctx1 -> ctx2 -> ctx3
+```
+When we query a value, Go will look in the immediate context, and move up one level all the way to the top if 
+the value is not found. For example, this is what happen when looking up the value "number":  
+1. check the value "numbers" in `ctx3`, it is not there (it is "complex_struct")
+2. check the value "numbers" in `ctx2`, it is not there (it is "message")
+3. check the value "numbers" in `ctx1`, found
 
-If we passed `ctx2` to `handleGetValue`, then the curl would show `nil` for the complex struct, because `ctx3` would not 
+If we attached `ctx2` to our request instead of `ctx3`, then the curl would show `nil` for the complex struct, because `ctx3` would not 
 be checked.
 
-### (Server side) Use context for timeout (unexpected behaviour)
+## 3. Use context for timeout 
 
-Probably the main reason to use context: timeout and deadlines. Making sure we're not hanging somewhere.
+Probably the main reason to use context: timeout and deadlines. Making sure we're not hanging somewhere for too long.
 
-To do this, we'll alter our server a little bit, we'll add a middleware in our `Handle` function that will add a 
-timeout if the duration specified is more than 0:  
-
-```go
-func (s *Server) Handle(addr string, handlers ...ServerHandler) {
-	var middlewares []ServerHandler
-
-	if s.timeout == 0 {
-		middlewares = handlers
-	} else {
-		middlewares = append([]ServerHandler{s.timeoutMiddleware}, handlers...)
-	}
-
-	http.Handle(addr, handleMiddlewares(middlewares))
-}
-
-func (s *Server) timeoutMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(r.Context(), s.timeout)
-		defer cancel()
-
-		processDone := make(chan bool)
-
-		go func() {
-			next.ServeHTTP(w, r.WithContext(ctx))
-			processDone <- true
-		}()
-
-		select {
-		case <-ctx.Done():
-			w.WriteHeader(http.StatusGatewayTimeout)
-			w.Write([]byte("\nContext expired"))
-            w.Write([]byte(fmt.Sprintf("\nContext error: [%s]", ctx.Err().Error())))
-            fmt.Println("context timeout")
-		case <-processDone:
-			fmt.Println("process done")
-		}
-	})
-}
-```
-
-To take advantage of this, we need to add a timeout to our server:
-
-```go
-server := NewServer(1 * time.Second) 
-```
-
-We will also add a 2 seconds sleep in our middleware to trigger the cancellation of the context due to timeout. I've 
-also added some server logs to highlight something I did not expect, and I don't like but I'm not sure what to do 
-about it, except maybe considering my example flawed. :/
-
-```go 
-func addValueToContext(next http.Handler) http.Handler {
-    // [...]
-
-    fmt.Println("Before sleep")
-    time.Sleep(2 * time.Second)
-    fmt.Println("After sleep")
-
-	next.ServeHTTP(w, r.WithContext(ctx3))
-}
-
-func handleGetValue(next http.Handler) http.Handler {
-    // [...]
-
-   	fmt.Println("finished executing handleGetNumber") 
-}
-
-```
-
-If we run this, we get the correct response at the right time on the client:
-
-```
-curl localhost:8080/get-value
-
-context expired
-Context error: [context deadline exceeded]
-```
-
-However if we look at the server's logs, we unfortunately see this:
-
-```
-Before sleep
-context timeout
-After sleep
-finished executing handleGetNumber
-```
-
-I would have expected / hoped that the server would stop the execution chain once the request's context expired, but it 
-didn't. Feels bad.
-
-To be fair in real situation, our slow process would require a context to be passed, and error out 
-if it expires, instead of trying to have a magic middleware in the middle. Let's rewrite our previous example with a 
-more expected structure.
-
-Our middleware become the following:
-
-```go 
-func (s *Server) timeoutMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(r.Context(), s.timeout)
-		defer cancel()
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-```
-
-In a more normal scenario, you would imagine that such a middleware would not exist, and you would create the context 
-directly in the endpoint, but let's keep it like this for global timeout.
-
-No more channels action in there, those would be handle by anything that require a context instead.
-
-Our route handler:
+In this example, we'll forget about our context values, and update our route handler to mimic some long operation using 
+context. The handler looks like this now:
 ```go 
 func handleGetValue(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("starting handleGetValue")
-		defer fmt.Println("finished executing handleGetNumber")
+		log.Println(t(), "handleGetValue started")
+		defer log.Println(t(), "handleGetNumber ended")
 
-		message, err := executeHandleGetValue(r.Context(), r)
+		ctx, cancelCtx := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancelCtx()
+
+		err := someLongAction(ctx)
 		if err != nil {
-			w.Write([]byte(fmt.Sprintf("\nError happened: %s", err.Error())))
-			fmt.Println("Error happened: ", err)
+			w.Write([]byte(fmt.Sprintf("\n%s - Error happened: %s", t(), err.Error())))
+			log.Println(t(), "Error happened: ", err)
 			return
 		}
 
-		w.Write([]byte(message))
+		w.Write([]byte(fmt.Sprintf("%s -- operation finished successfully", t())))
+	})
+}
+```
+First we need to create a new context that include a timeout. What it means internally is that the context will be cancelled 
+once the timeout duration has been reached. It is up to whoever wants to make use of the context to check and return an error 
+if that happen.
+
+In our example, this will be the role of `someLongAction`, it should return an error if the context expires. The function 
+is defined as:
+```go 
+func someLongAction(ctx context.Context) error {
+	log.Println("someLongAction started")
+	defer log.Println("someLongAction ended")
+
+	select {
+	case err := <-simulatingOperation():
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+```
+We wait for whatever happen first: `simulatingOperation()` to finish, or the `ctx` to be done / expired.
+
+```go 
+func simulatingOperation() chan error {
+	log.Println("simulatingOperation started")
+	defer log.Println("simulatingOperation ended")
+
+	chanErr := make(chan error, 1)
+
+	go func() {
+		log.Println("goroutine in simulatingOperation started")
+		defer log.Println("goroutine in simulatingOperation ended")
+
+		time.Sleep(5 * time.Second)
+		chanErr <- nil
+	}()
+
+	return chanErr
+}
+```
+The `select` statement cases expect a channel, so our function need to return one. We'll return a channel containing 1 
+error, as a real function would probably be suject to fail.
+
+We start a goroutine, sleep for 5 seconds and write the error to the channel at the end. That means that if the timeout 
+of the context is more than 5 seconds, we will get the result of `simulatingOperation()`, if not we will propagate the 
+context error.
+
+Let's see it in action. Remember above that we set our context timeout to 2 seconds.
+```
+21:29:57 handleGetValue started
+21:29:57 someLongAction started
+21:29:57 simulatingOperation started
+21:29:57 simulatingOperation ended
+21:29:57 goroutine in simulatingOperation started
+21:29:59 someLongAction ended
+21:29:59 Error happened:  context deadline exceeded
+21:29:59 handleGetNumber ended
+21:30:02 goroutine in simulatingOperation ended
+```
+Above are all of server logs, that highlight the execution code in order, with the time on the left to see the effect of 
+the sleep and the timeouts.
+
+1. Started request at 29:57
+2. The goroutine started sleeping
+3. Some long action ended 2 seconds later
+4. The error is `context deadline exceeded` as expected
+5. Route handler ends right there
+6. The goroutine ends after the sleep as expected. I'm not gonna lie, this surprised me at first, I though it would be 
+"cancelled" magically, but it does not make sense when you think about it, as it runs concurrently, on its own. Initially 
+I was afraid of leaking memory or something like that, it didn't feel good that some useless code is still being executed,
+but it's just what it is I think. It's the responsibility of the goroutine to not hang forever.
+
+On our client's side:
+```
+curl localhost:8080/get-value
+
+21:29:59 - Error happened: context deadline exceeded
+```
+We can see that we got the correct response, at the right time.
+
+## 4. Some tweaked examples
+
+Below are more examples when I tweaked some values, see what happens.
+
+### 4.1 Increate the timeout to 8 seconds
+We should get a successful response after 5 seconds.
+```go 
+func handleGetValue(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// [...]
+		ctx, cancelCtx := context.WithTimeout(r.Context(), 8*time.Second)
+        // [...]
 	})
 }
 ```
 
-Here we call `executeHandleGetValue` which accept a context, return a `string` and an `error`. It is expected that if 
-the context expired, we get the appropriate error, otherwise we return the message.
-
-`executeHandleGetValue` looks like this. I removed the reading and printing the context values for clarity.
-
-```go
-func executeHandleGetValue(ctx context.Context, r *http.Request) (string, error) {
-	chanErr := make(chan error, 1)
-
-	go func() {
-		fmt.Println("executeHandleGetValue started")
-		defer fmt.Println("executeHandleGetValue ended")
-
-		time.Sleep(2 * time.Second)
-
-		// simulate errors
-		shouldError := true
-
-		if shouldError {
-			chanErr <- fmt.Errorf("an error happened during goroutine")
-		} else {
-			chanErr <- nil
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		return "", ctx.Err()
-	case err := <-chanErr:
-		return "finished successfully", err
-	}
-}
+Here are our server logs:
 ```
-
-We put our code in a goroutine so we can track it via a channel. We monitor both the context status and the goroutine 
-execution by storing the error returned in the channel.
-
-If the context expired, we return the context error and the goroutine is killed as we exit the function.
-
-Client:
+22:11:02 handleGetValue started
+22:11:02 someLongAction started
+22:11:02 simulatingOperation started
+22:11:02 simulatingOperation ended
+22:11:02 goroutine in simulatingOperation started
+22:11:07 goroutine in simulatingOperation ended
+22:11:07 someLongAction ended
+22:11:07 handleGetNumber ended
+```
+And our client:
 ```
 curl localhost:8080/get-value
 
-Error happened: context deadline exceeded
+22:11:07 -- operation finished successfully
+```
+As expected, we get a successful response 5 seconds after initiating the query, no timeout happened.
+
+### 4.2 simulatingOperation returns an error
+Keeping it as it is now, make the goroutine returns an error instead.
+```go 
+func simulatingOperation() chan error {
+	// [...]
+	go func() {
+		// [...]
+		chanErr <- fmt.Errorf("something terrible happened, PLEASE HELP!")
+	}()
+    // [...]
+}
+```
+Running it we get:
+```
+22:16:53 handleGetValue started
+22:16:53 someLongAction started
+22:16:53 simlatingOperation started
+22:16:53 simlatingOperation ended
+22:16:53 goroutine in simulatingOperation started
+22:16:58 goroutine in simulatingOperation ended
+22:16:58 someLongAction ended
+22:16:58 Error happened:  something terrible happened, PLEASE HELP!
+22:16:58 handleGetNumber ended
 ```
 
-Server:
 ```
-starting handleGetValue
-executeHandleGetValue started
-Error happened:  context deadline exceeded
-finished executing handleGetNumber
-executeHandleGetValue ended
+curl localhost:8080/get-value
+
+22:16:58 - Error happened: something terrible happened, PLEASE HELP!
 ```
+As expected, we get the error after 5 seconds.
