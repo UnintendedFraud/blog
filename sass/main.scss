@@ -46,11 +46,12 @@ body {
       color: $orange;
   }
 
-  ul {
+  ul, ol {
       margin: 12px 0;
 
       li {
           margin: 6px 0;
+          margin-bottom: 8px;
       }
   }
 
