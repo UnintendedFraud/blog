@@ -106,12 +106,10 @@ body {
           color: $orange;
           display: inline-block;
 
-          &.blog-link {
+          &.main-link {
               font-size: 1.3em;
-          }
-
-          &.external {
-              margin-bottom: 8px;
+              margin-left: 18px;
+              margin-right: 18px;
           }
       }
 
