@@ -47,6 +47,25 @@
         <p>Here's 5 movies I enjoyed recently, check them out!</p>
 
         <div class="movie">
+             {% set image = resize_image(path="/static/movies/heretic.jpg", width=80, op="fit_width") %}
+             <img src="{{ image.url }}" title="Heretic (2024)" />
+             <div>
+                <div class="movie-title">
+                    <h4>Heretic</h4>
+                    <a href="https://letterboxd.com/film/heretic-2024/" target="_blank" rel="noreferrer">see on letterboxd</a>
+                </div>
+                <img class="mobile" src="{{ image.url }}" title="heretic (2024)" />
+                <p><i>"Two young missionaries are forced to prove their faith when they knock on the wrong door and are 
+                    greeted by a diabolical Mr. Reed."</i>
+                <br>
+                The first hour of Heretic is one of the best piece of cinema I've experienced. It's a long discussion 
+                between the three protagonist
+                </p>
+             </div>
+        </div>
+
+
+        <div class="movie">
              {% set image = resize_image(path="/static/movies/movie4.jpg", width=80, op="fit_width") %}
              <img src="{{ image.url }}" title="station eleven" />
              <div>
@@ -62,19 +81,6 @@
                 not read -. The serie is very poetic, there are so many beautiful and emotionnal moments I cannot count them, it is 
                 one of the best show I've seen in recent times. At the end I only wish I could erase my memory and watch it again.
                 </p>
-             </div>
-        </div>
-
-        <div class="movie">
-             {% set image = resize_image(path="/static/movies/movie1.jpg", width=80, op="fit_width") %}
-             <img src="{{ image.url }}" title="la passion de dodin bouffant" />
-             <div>
-                <div class="movie-title">
-                    <h4>La Passion de Dodin Bouffant (The Taste of Things)</h4>
-                    <a href="https://letterboxd.com/film/the-taste-of-things/" target="_blank" rel="noreferrer">see on letterboxd</a>
-                </div>
-                <img class="mobile" src="{{ image.url }}" title="la passion de dodin bouffant" />
-                <p>As a french and a food lover, I had to love this movie. Classy food porn is the best description one can make.</p>
              </div>
         </div>
 
